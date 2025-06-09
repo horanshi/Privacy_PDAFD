@@ -2,108 +2,114 @@
 
 Paper title: **Unveiling Client Privacy Leakage from Public Dataset Usage in Federated Distillation**
 
-Artifacts HotCRP Id: **#Enter your HotCRP Id here** (not your paper Id, but the artifacts id)
+Artifacts HotCRP Id: **#17**
 
-Requested Badge: Either **Available**, **Functional**, or **Reproduced**
+Requested Badge: **Available**, **Functional**, **Reproduced**
 
 ## Description
-A short description of your artifact and how it links to your paper.
+The source code of the paper "Unveiling Client Privacy Leakage from Public Dataset Usage in Federated Distillation", in Proceedings on Privacy Enhancing Technologies(PoPETs 2025).
 
-### Security/Privacy Issues and Ethical Concerns (All badges)
-If your artifact holds any risk to the security or privacy of the reviewer's machine, specify them here, e.g., if your artifact requires a specific security mechanism, like the firewall, ASLR, or another thing, to be disabled for its execution.
-Also, emphasize if your artifact contains malware samples, or something similar, to be analyzed.
-In addition, you should highlight any ethical concerns regarding your artifacts here.
+In this codebase, we provide code for conducting Federated Distillation training (e.g., FedMD), as well as code for performing Label Distribution Attacks and Membership Inference Attacks (Co-op LiRA and Distillation-based LiRA) against clients participating in FD training when the server acts as an attacker.
 
-## Basic Requirements (Only for Functional and Reproduced badges)
-Describe the minimal hardware and software requirements of your artifact and estimate the compute time and storage required to run the artifact.
+### Security/Privacy Issues and Ethical Concerns
+There are no Security/Privacy Issues and Ethical Concerns.
 
+## Basic Requirements
 ### Hardware Requirements
-If your artifact requires specific hardware to be executed, mention that here.
-Provide instructions on how a reviewer can gain access to that hardware through remote access, buying or renting, or even emulating the hardware.
-Make sure to preserve the anonymity of the reviewer at any time.
+No specific hardware is required. experiments are conducted on general-purpose machines equipped with Intel Xeon Silver 4208 CPU@2.10 GHz, Quadro RTX 5000 GPU, and 16 GB RAM.
 
 ### Software Requirements
-Describe the OS and software packages required to evaluate your artifact.
-This description is essential if you rely on proprietary software or software that might not be easily accessible for other reasons.
-Describe how the reviewer can obtain and install all third-party software, data sets, and models.
+All packages are included in ```requirements.txt```. 
 
 ### Estimated Time and Storage Consumption
-Provide an estimated value for the time the evaluation will take and the space on the disk it will consume. 
-This helps reviewers to schedule the evaluation in their time plan and to see if everything is running as intended.
-More specifically, a reviewer, who knows that the evaluation might take 10 hours, does not expect an error if, after 1 hour, the computer is still calculating things.
+- Estimated Time consumption:
+Federated distillation training: 2 hours;
+Label distribution attacks: 2 minutes;
+Co-op LiRA: 10 minutes/client;
+Distillation-basd LiRA: 40 minutes/client.
 
-## Environment 
-In the following, describe how to access our artifact and all related and necessary data and software components.
-Afterward, describe how to set up everything and how to verify that everything is set up correctly.
+- Estimated storage consumption: 30GB.
 
-### Accessibility (All badges)
-Describe how to access your artifact via persistent sources.
-Valid hosting options are institutional and third-party digital repositories.
-Do not use personal web pages.
-For repositories that evolve over time (e.g., Git Repositories ), specify a specific commit-id or tag to be evaluated.
-In case your repository changes during the evaluation to address the reviewer's feedback, please provide an updated link (or commit-id / tag) in a comment.
 
-### Set up the environment (Only for Functional and Reproduced badges)
-Describe how the reviewers should set up the environment for your artifact, including downloading and installing dependencies and the installation of the artifact itself.
-Be as specific as possible here.
-If possible, use code segments to simply the workflow, e.g.,
 
-```bash
-git clone git@my_awesome_artifact.com/repo
-apt install libxxx xxx
+## Environment
+### Accessibility
+GitHub Repository: https://github.com/horanshi/Privacy_PDAFD
+
+### Set up the environment
+- Configure the environment needed for the experiment
 ```
-Describe the expected results where it makes sense to do so.
-
-### Testing the Environment (Only for Functional and Reproduced badges)
-Describe the basic functionality tests to check if the environment is set up correctly.
-These tests could be unit tests, training an ML model on very low training data, etc..
-If these tests succeed, all required software should be functioning correctly.
-Include the expected output for unambiguous outputs of tests.
-Use code segments to simplify the workflow, e.g.,
-```bash
-python envtest.py
+pip install -r requirements.txt
+```
+- Create folders to store the MIA results
+```
+cd Privacy_PDAFD
+mkdir result
 ```
 
-## Artifact Evaluation (Only for Functional and Reproduced badges)
-This section includes all the steps required to evaluate your artifact's functionality and validate your paper's key results and claims.
-Therefore, highlight your paper's main results and claims in the first subsection. And describe the experiments that support your claims in the subsection after that.
+### Testing the Environment 
+List all installed packages and compare with ```requirements.txt```.
+```
+pip list
+```
 
+## Artifact Evaluation
 ### Main Results and Claims
-List all your paper's results and claims that are supported by your submitted artifacts.
+#### Main Result 1: Label distribution leakage
 
-#### Main Result 1: Name
-Describe the results in 1 to 3 sentences.
-Refer to the related sections in your paper and reference the experiments that support this result/claim.
+When clients upload logits following inference on public datasets, these values may inadvertently reveal the label distribution characteristics of their private datasets.
+Please refer to ```Experiment 2``` to see how to reproduce the result.
 
-#### Main Result 2: Name
-...
+#### Main Result 2: Membership information leakage
+
+Using the logits uploaded by clients from inference on public datasets, the server can also leverage these logit values to conduct precise membership inference attacks against clients.
+Please refer to ```Experiment 3 and 4``` to see how to reproduce the result.
 
 ### Experiments 
-List each experiment the reviewer has to execute. Describe:
- - How to execute it in detailed steps.
- - What the expected result is.
- - How long it takes and how much space it consumes on disk. (approximately)
- - Which claim and results does it support, and how.
-
-#### Experiment 1: Name
-Provide a short explanation of the experiment and expected results.
-Describe thoroughly the steps to perform the experiment and to collect and organize the results as expected from your paper.
-Use code segments to support the reviewers, e.g.,
-```bash
-python experiment_1.py
+#### Experiment 1: Perform the Federated Distillation
+Select one Federated Distillation training algorithm(eg. FedMD), decide the number of clients, and perform the federated distillation training on the clients. 
 ```
-#### Experiment 2: Name
-...
+python main.py --dataset 'CIFAR10' --batch_size 64  --digest_batch_size 128 --num_rounds 10 --lr 0.001 --co_lr 0.001 --num_clients 10 --num_classes 10 --sampling_rate 1 --pre_ep 20 --digest_ep 10 --revisit_ep 3 --beta 1 --seed 42 --alg 'FedMD' --model 'resnet18'  --public_part 0.2
+```
+For the optional arguments, please refer to the ```README.md``` document.
 
-#### Experiment 3: Name 
-...
+#### Experiment 2: Perform the Label Distribution Attack
+Perform the Label Distribution Attack on all the clients.
+```
+python ldia.py
+```
+For the optional arguments, please refer to the ```README.md``` document.
 
-## Limitations (Only for Functional and Reproduced badges)
-Describe which tables and results are included or are not reproducible with the provided artifact.
-Provide an argument why this is not included/possible.
+Expected results: We can observe that the predicted label distribution of the target client's private dataset is very close to the ground truth label distribution, with a small KL divergence value between them.
+For specific results, please refer to the Table 3 and Figure 7 in the paper.
 
-## Notes on Reusability (Only for Functional and Reproduced badges)
-First, this section might not apply to your artifacts.
-Use it to share information on how your artifact can be used beyond your research paper, e.g., as a general framework.
-The overall goal of artifact evaluation is not only to reproduce and verify your research but also to help other researchers to re-use and improve on your artifacts.
-Please describe how your artifacts can be adapted to other settings, e.g., more input dimensions, other datasets, and other behavior, through replacing individual modules and functionality or running more iterations of a specific part.
+
+#### Experiment 3: Perform the Co-op LiRA.
+Perform the Co-op LiRA for all the clients.
+```
+python mia.py --alg FedMD --beta 1 --dataset CIFAR10 --epoch 0 --num_shadows 16 --attack coop
+```
+For the optional arguments, please refer to the ```README.md``` document.
+
+Expected results: We can observe that when using other clients' private models as reference models, the server can perform precise membership inference attacks against target clients, with very high True Positive Rate in the low False Positive Rate region.
+For specific results, please to the Table 4 in the paper.
+
+#### Experiment 3: Perform Distillation-based LiRA.
+Decide the number of shadow models and perform the Distillation-based LiRA for all the clients.
+```
+python mia.py --alg FedMD --beta 1 --dataset CIFAR10 --epoch 0 --num_shadows 16 --attack distill
+```
+For the optional arguments, please refer to the ```README.md``` document.
+
+Expected results: We can observe that when distilling target clients' models using public datasets to obtain reference models, the server can perform precise membership inference attacks against target clients using these distilled reference models, with very high True Positive Rate in the low False Positive Rate region. 
+For specific results, please refer to the Table 5 and Figure 9 in the paper.
+
+
+## Limitations
+Due to time constraints in organizing our codebase, we have not yet elegantly integrated the DSFL and Cronus FD frameworks into this repository to allow reviewers to easily switch between DSFL and Cronus frameworks for evaluation purposes. 
+So we used the FedMD framework as an example for illustration.
+But due to the algorithmic similarities between FedMD and both DSFL and Cronus, as well as their respective use of public datasets, they will exhibit similar privacy leakage characteristics in the final privacy evaluation.
+We plan to integrate the DSFL and Cronus FD frameworks into this GitHub repository in future updates.
+
+## Notes on Reusability
+Our framework can be utilized as an evaluation tool to assess the degree of privacy leakage in other federated distillation or federated learning frameworks.
