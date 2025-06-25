@@ -106,6 +106,10 @@ For specific results, please refer to the Table 5 and Figure 9 in the paper.
 
 
 ## Limitations
+We have conducted tests across different GPU architectures (RTX 5000 and A100) and found that hardware variations can lead to differences in numerical outputs.
+These discrepancies stem from GPU-specific floating-point operations that accumulate throughout the training and inference processes. 
+While the overall conclusions and comparative trends remain robust and reproducible, precise numerical alignment may not always be achievable across diverse hardware environments.
+
 Due to time constraints in organizing our codebase, we have not yet elegantly integrated the DSFL and Cronus FD frameworks into this repository to allow reviewers to easily switch between DSFL and Cronus frameworks for evaluation purposes. 
 So we used the FedMD framework as an example for illustration.
 But due to the algorithmic similarities between FedMD and both DSFL and Cronus, as well as their respective use of public datasets, they will exhibit similar privacy leakage characteristics in the final privacy evaluation.
